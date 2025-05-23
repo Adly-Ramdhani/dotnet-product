@@ -1,0 +1,273 @@
+﻿@* @using Microsoft.AspNetCore.Http
+@{ 
+    var username = Context.Session.GetString("Username"); // Ambil username dari session    
+} *@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - ALJEproject</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+    <link rel="stylesheet" href="~/lib/fontawesome/css/all.min.css" />
+
+    <style>
+
+        body {
+            overflow-x: hidden;
+        }
+
+        #sidebar {
+            min-height: 100vh;
+            width: 250px;
+            background-color: #4F709C;
+            color: #fff;
+            transition: all 0.3s;
+        }
+
+            #sidebar.collapsed {
+                width: 60px;
+            }
+
+            #sidebar .menu-header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 10px 15px;
+                border-bottom: 1px solid #F5EFE7;
+                /* background-color: #F5EFE7; */
+            }
+
+            #sidebar.collapsed .menu-item {
+                display: none;
+            }
+
+        #content {
+            transition: all 0.3s;
+        }
+
+            #content.collapsed {
+            }
+
+        #right-side {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background-color: #D8C4B6;
+            color: #fff;
+            /* border-bottom: 1px solid #ddd; */
+        }
+
+        #user-info {
+            display: flex;
+            align-items: center;
+        }
+
+            #user-info img {
+                width: 30px;
+                height: 30px;
+                border-radius: 50%;
+                margin-right: 10px;
+            }
+
+        #sidebar.collapsed .menu-header h5 {
+            display: none;
+        }
+        .footer {
+            background-color: #F5EFE7;
+            color: black;
+            text-align: center;
+            padding: 10px 0;
+        }
+
+
+    </style>
+
+</head>
+<body>
+    <header>
+        <div class="d-flex">
+            <!-- Sidebar -->
+            <nav id="sidebar">
+                <div class="menu-header">
+                    <button id="toggleSidebar" class="btn btn-primary btn-sm">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <h5 id="menuTitle" class="mb-0 text-white">My Menu</h5>
+                </div>
+                <ul class="nav flex-column p-2">
+                    <li class="nav-item">
+                        <a href="#" class="nav-link text-white">
+                            <i class="fas fa-home"></i>
+                            <span class="menu-item">Home</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link text-white">
+                            <i class="fas fa-user"></i>
+                            <span class="menu-item">Profile</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link text-white">
+                            <i class="fas fa-cogs"></i>
+                            <span class="menu-item">Settings</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link text-white">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span class="menu-item">Logout</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <!-- Content -->
+            <div id="content" class="flex-grow-1">
+                <!-- Right-Side -->
+                <div id="right-side">
+                    <div>
+                        <h6 class="mb-0">Alje Template</h6>
+                    </div>
+                    <div id="user-info">
+                        <img src="https://via.placeholder.com/40" alt="User Image">
+                        <span class="mr-3">John Doe</span>
+                        <a href="#" class="btn btn-primary btn-sm">Logout</a>
+                    </div>
+                </div>
+
+                <!-- Main Content -->
+                <div class="p-4">
+                    @RenderBody()
+                </div>
+
+                <!-- Footer -->
+                <div class="footer mt-auto">
+                    <p class="mb-1">&copy; @DateTime.Now.Year  - ALJEproject - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>.</p>
+                    <p class="small mb-0">
+                        <a href="#" class="text-black-50 text-decoration-none">Privacy Policy</a> |
+                        <a href="#" class="text-black-50 text-decoration-none">Terms of Service</a>
+                    </p>
+                </div>
+
+            </div>
+
+
+
+        </div>
+
+
+
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+            <div class="container">
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">ALJEproject</a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                        </li>
+                        @* @if (ViewBag.Menus != null)
+                        {
+                            var groupedMenus = ViewBag.Menus as List<Menu>;
+
+                            foreach (var parentMenu in groupedMenus.Where(m => m.ParentMenuID == null)) // Hanya ambil parent menu
+                            {
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle text-dark" href="#" id="menuDropdown_@parentMenu.MenuID" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        @parentMenu.MenuDesc <!-- Nama parent menu sebagai label dropdown -->
+                                    </a>
+                                    <div class="dropdown-menu" aria-labelledby="menuDropdown_@parentMenu.MenuID">
+                                        @foreach (var subMenu in parentMenu.SubMenus)
+                                        {
+                                            <a class="dropdown-item" asp-area="" asp-controller="@subMenu.ControllerName" asp-action="Index">@subMenu.MenuDesc</a>}
+                                    </div>
+                                </li>
+                            }
+                        } *@
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-dark" href="#" id="administratorDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Administrator
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="administratorDropdown">
+                                <a class="dropdown-item" asp-area="" asp-controller="Menu" asp-action="Index">Menu</a>
+                                <a class="dropdown-item" asp-area="" asp-controller="User" asp-action="Index">User</a>
+                                <a class="dropdown-item" asp-area="" asp-controller="UserAccess" asp-action="Index">User Access</a>
+                                <a class="dropdown-item" asp-area="" asp-controller="Role" asp-action="Index">Role</a>
+                                <a class="dropdown-item" asp-area="" asp-controller="Option" asp-action="Index">Option</a>
+                            </div>
+                        </li>
+                    </ul>
+                    <ul class="navbar-nav">
+                        @* @if (!string.IsNullOrEmpty(username))
+                        {
+                            username = Context.Session.GetString("Username");
+                            <li class="nav-item">
+                                <span class="navbar-text text-dark">Hello, @username!</span>
+                            </li>
+                            <li class="nav-item">
+                                <form asp-area="" asp-controller="Account" asp-action="Logout" method="post" class="form-inline">
+                                    <button type="submit" class="btn btn-link nav-link text-dark">Logout</button>
+                                </form>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Login">Login</a>
+                            </li>
+                        }
+                    </ul> *@
+                </div>
+            </div>
+        </nav>
+
+    
+
+
+
+    </header>
+    @*<div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; @DateTime.Now.Year  - ALJEproject - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+        </div>
+    </footer>*@
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/lib/fontawesome/js/all.min.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+
+        <script>
+            $(document).ready(function () {
+                // Show side menu
+                document.getElementById('toggleSidebar').addEventListener('click', function () {
+                    var sidebar = document.getElementById('sidebar');
+                    var content = document.getElementById('content');
+                    var menuTitle = document.getElementById('menuTitle');
+                    sidebar.classList.toggle('collapsed');
+                    content.classList.toggle('collapsed');
+
+                    // Hide/Show the menu title
+                    if (sidebar.classList.contains('collapsed')) {
+                        menuTitle.style.display = 'none';
+                    } else {
+                        menuTitle.style.display = 'block';
+                    }
+                });
+            });
+        </script>
+</body>
+</html>
