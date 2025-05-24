@@ -1,0 +1,66 @@
+@model ProductManagementApp.Models.User
+
+@{
+    ViewData["Title"] = "Edit User";
+}
+
+<div class="container mt-5">
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-warning text-dark">
+            <h4 class="mb-0">Edit User</h4>
+        </div>
+
+        <form asp-action="Edit" method="post" enctype="multipart/form-data">
+            @Html.AntiForgeryToken()
+            <div class="card-body">
+                <input type="hidden" asp-for="Id" />
+
+                <div class="mb-3 row">
+                    <label asp-for="FullName" class="col-sm-3 col-form-label"></label>
+                    <div class="col-sm-9">
+                        <input asp-for="FullName" class="form-control" />
+                        <span asp-validation-for="FullName" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="mb-3 row">
+                    <label asp-for="Email" class="col-sm-3 col-form-label"></label>
+                    <div class="col-sm-9">
+                        <input asp-for="Email" class="form-control" />
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="mb-3 row">
+                    <label asp-for="Password" class="col-sm-3 col-form-label"></label>
+                    <div class="col-sm-9">
+                        <input asp-for="Password" type="password" class="form-control" />
+                        <span asp-validation-for="Password" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="mb-3 row">
+                    <label asp-for="ProfilePictureFile" class="col-sm-3 col-form-label">Profile Picture</label>
+                    <div class="col-sm-9">
+                        @if (!string.IsNullOrEmpty(Model.ProfilePicture))
+                        {
+                            <div class="mb-2">
+                                <img src="@Model.ProfilePicture"
+                                     alt="Profile"
+                                     class="rounded-circle border border-2"
+                                     style="width: 100px; height: 100px; object-fit: cover;" />
+                            </div>
+                        }
+                        <input asp-for="ProfilePictureFile" type="file" class="form-control" />
+                        <span asp-validation-for="ProfilePictureFile" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-footer text-end">
+                <button type="submit" class="btn btn-success">Save</button>
+                @* <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a> *@
+            </div>
+        </form>
+    </div>
+</div>

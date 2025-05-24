@@ -1,0 +1,41 @@
+@model ProductManagementApp.Models.User
+
+@{
+    ViewData["Title"] = "User Details";
+}
+
+<div class="container mt-5" style="max-width: 480px;">
+    <div class="card shadow-sm border-0 rounded-4">
+        <div class="card-header bg-primary text-white text-center rounded-top-4 py-3">
+            <h4 class="mb-0 fw-semibold">User Details</h4>
+        </div>
+        <div class="card-body text-center px-4">
+            @if (!string.IsNullOrEmpty(Model.ProfilePicture))
+            {
+                <img src="@Model.ProfilePicture"
+                     alt="Profile"
+                     class="rounded-circle border border-4 mb-4"
+                     style="width: 140px; height: 140px; object-fit: cover; background-color: #fff;" />
+            }
+            else
+            {
+                <div class="rounded-circle border border-4 d-inline-flex align-items-center justify-content-center mb-4" 
+                     style="width: 140px; height: 140px; background-color: #f0f0f0; color: #aaa; font-size: 0.9rem;">
+                    No picture
+                </div>
+            }
+
+            <dl class="row text-start gx-3 gy-2">
+                <dt class="col-4 fw-semibold text-secondary">Name</dt>
+                <dd class="col-8 fs-5 mb-3">@Model.FullName</dd>
+
+                <dt class="col-4 fw-semibold text-secondary">Email</dt>
+                <dd class="col-8 fs-6 text-break">@Model.Email</dd>
+            </dl>
+        </div>
+        <div class="card-footer text-center rounded-bottom-4 py-3">
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-primary me-3 px-4">Edit</a>
+            @* <a asp-action="Index" class="btn btn-outline-secondary px-4">Back to List</a> *@
+        </div>
+    </div>
+</div>

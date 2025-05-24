@@ -1,0 +1,33 @@
+@{
+    ViewData["Title"] = "Category";
+}
+@model IEnumerable<ProductManagementApp.Models.ProductCategory>
+
+<h2>Product Categories</h2>
+
+<p><a href="@Url.Action("Create")" class="btn btn-primary">Create New</a></p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Created At</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var cat in Model)
+        {
+            <tr>
+                <td>@cat.Name</td>
+                <td>@cat.Description</td>
+                <td>@cat.CreatedAt.ToLocalTime().ToString("g")</td>
+                <td>
+                    <a href="@Url.Action("Edit", new { id = cat.Id })" class="btn btn-sm btn-warning">Edit</a>
+                    <a href="@Url.Action("Delete", new { id = cat.Id })" class="btn btn-sm btn-danger">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -7,10 +7,11 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - ALJEproject</title>
+    <title>@ViewData["Title"] Product Management </title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" />
     <link rel="stylesheet" href="~/lib/fontawesome/css/all.min.css" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <style>
 
@@ -99,29 +100,31 @@
                 </div>
                 <ul class="nav flex-column p-2">
                     <li class="nav-item">
-                        <a href="#" class="nav-link text-white">
+                        <a href="/" class="nav-link text-white">
                             <i class="fas fa-home"></i>
                             <span class="menu-item">Home</span>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="#" class="nav-link text-white">
+                       @{
+                            var userId = User.FindFirst("id")?.Value;
+                        }
+                        <a href="@Url.Action("Details", "User", new { id = userId })" class="nav-link text-white">
                             <i class="fas fa-user"></i>
                             <span class="menu-item">Profile</span>
                         </a>
+
                     </li>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link text-white">
-                            <i class="fas fa-cogs"></i>
-                            <span class="menu-item">Settings</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link text-white">
-                            <i class="fas fa-sign-out-alt"></i>
+                    <a href="@Url.Action("Index", "ProductCategory")" class="nav-link text-white">
+                        <i class="fas fa-cogs"></i>
+                        <span class="menu-item">Product</span>
+                    </a>
+                    <form asp-controller="auth" asp-action="logout" method="post" id="logoutForm" class="d-inline">
+                        <button type="submit" class="btn btn-link nav-link text-white p-0">
+                            <i class="fas fa-cog"></i>
                             <span class="menu-item">Logout</span>
-                        </a>
-                    </li>
+                        </button>
+                    </form>
                 </ul>
             </nav>
 
@@ -130,12 +133,18 @@
                 <!-- Right-Side -->
                 <div id="right-side">
                     <div>
-                        <h6 class="mb-0">Alje Template</h6>
+                        <h6 class="mb-0">Product Management</h6>
                     </div>
                     <div id="user-info">
-                        <img src="https://via.placeholder.com/40" alt="User Image">
-                        <span class="mr-3">John Doe</span>
-                        <a href="#" class="btn btn-primary btn-sm">Logout</a>
+                    @if (User.Identity != null && User.Identity.IsAuthenticated)
+                    {
+                        <span class="mr-3">Hello, @User.Identity.Name!</span>
+
+                    }
+                    else
+                    {
+                        <a class="btn btn-primary btn-sm" asp-area="" asp-controller="Account" asp-action="Login">Login</a>
+                    }
                     </div>
                 </div>
 
@@ -145,105 +154,14 @@
                 </div>
 
                 <!-- Footer -->
-                <div class="footer mt-auto">
-                    <p class="mb-1">&copy; @DateTime.Now.Year  - ALJEproject - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>.</p>
-                    <p class="small mb-0">
-                        <a href="#" class="text-black-50 text-decoration-none">Privacy Policy</a> |
-                        <a href="#" class="text-black-50 text-decoration-none">Terms of Service</a>
-                    </p>
-                </div>
+              
 
             </div>
 
 
 
         </div>
-
-
-
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">ALJEproject</a>
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        @* @if (ViewBag.Menus != null)
-                        {
-                            var groupedMenus = ViewBag.Menus as List<Menu>;
-
-                            foreach (var parentMenu in groupedMenus.Where(m => m.ParentMenuID == null)) // Hanya ambil parent menu
-                            {
-                                <li class="nav-item dropdown">
-                                    <a class="nav-link dropdown-toggle text-dark" href="#" id="menuDropdown_@parentMenu.MenuID" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        @parentMenu.MenuDesc <!-- Nama parent menu sebagai label dropdown -->
-                                    </a>
-                                    <div class="dropdown-menu" aria-labelledby="menuDropdown_@parentMenu.MenuID">
-                                        @foreach (var subMenu in parentMenu.SubMenus)
-                                        {
-                                            <a class="dropdown-item" asp-area="" asp-controller="@subMenu.ControllerName" asp-action="Index">@subMenu.MenuDesc</a>}
-                                    </div>
-                                </li>
-                            }
-                        } *@
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle text-dark" href="#" id="administratorDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                Administrator
-                            </a>
-                            <div class="dropdown-menu" aria-labelledby="administratorDropdown">
-                                <a class="dropdown-item" asp-area="" asp-controller="Menu" asp-action="Index">Menu</a>
-                                <a class="dropdown-item" asp-area="" asp-controller="User" asp-action="Index">User</a>
-                                <a class="dropdown-item" asp-area="" asp-controller="UserAccess" asp-action="Index">User Access</a>
-                                <a class="dropdown-item" asp-area="" asp-controller="Role" asp-action="Index">Role</a>
-                                <a class="dropdown-item" asp-area="" asp-controller="Option" asp-action="Index">Option</a>
-                            </div>
-                        </li>
-                    </ul>
-                    <ul class="navbar-nav">
-                        @* @if (!string.IsNullOrEmpty(username))
-                        {
-                            username = Context.Session.GetString("Username");
-                            <li class="nav-item">
-                                <span class="navbar-text text-dark">Hello, @username!</span>
-                            </li>
-                            <li class="nav-item">
-                                <form asp-area="" asp-controller="Account" asp-action="Logout" method="post" class="form-inline">
-                                    <button type="submit" class="btn btn-link nav-link text-dark">Logout</button>
-                                </form>
-                            </li>
-                        }
-                        else
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Login">Login</a>
-                            </li>
-                        }
-                    </ul> *@
-                </div>
-            </div>
-        </nav>
-
-    
-
-
-
     </header>
-    @*<div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
-
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; @DateTime.Now.Year  - ALJEproject - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-        </div>
-    </footer>*@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
