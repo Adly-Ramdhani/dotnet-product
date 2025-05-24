@@ -12,8 +12,8 @@ using ProductManagementApp.Data;
 namespace ProductManagementApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250524051657_CreateProductTable")]
-    partial class CreateProductTable
+    [Migration("20250524210413_CreateProductCategoriesTable")]
+    partial class CreateProductCategoriesTable
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
