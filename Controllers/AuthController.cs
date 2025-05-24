@@ -74,7 +74,7 @@ namespace ProductManagementApp.Controllers
             return RedirectToAction("Login");
         }
 
-        // POST: /auth/login (API)
+        // POST: /auth/login
         [HttpPost("login")]
         public IActionResult Login([FromBody] LoginRequest request)
         {

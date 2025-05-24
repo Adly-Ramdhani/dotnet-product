@@ -73,6 +73,10 @@
                 margin-right: 10px;
             }
 
+        #sidebar .nav-link.btn {
+            text-align: left; 
+            width: 100%;      
+        }
         #sidebar.collapsed .menu-header h5 {
             display: none;
         }
@@ -100,33 +104,43 @@
                 </div>
                 <ul class="nav flex-column p-2">
                     <li class="nav-item">
-                        <a href="/" class="nav-link text-white">
+                        <a href="@Url.Action("Index", "Home")" class="nav-link text-white">
                             <i class="fas fa-home"></i>
                             <span class="menu-item">Home</span>
                         </a>
                     </li>
                     <li class="nav-item">
-                       @{
+                        @{
                             var userId = User.FindFirst("id")?.Value;
                         }
                         <a href="@Url.Action("Details", "User", new { id = userId })" class="nav-link text-white">
                             <i class="fas fa-user"></i>
                             <span class="menu-item">Profile</span>
                         </a>
-
                     </li>
-                    <a href="@Url.Action("Index", "ProductCategory")" class="nav-link text-white">
-                        <i class="fas fa-cogs"></i>
-                        <span class="menu-item">Product</span>
-                    </a>
-                    <form asp-controller="auth" asp-action="logout" method="post" id="logoutForm" class="d-inline">
-                        <button type="submit" class="btn btn-link nav-link text-white p-0">
-                            <i class="fas fa-cog"></i>
-                            <span class="menu-item">Logout</span>
-                        </button>
-                    </form>
+                    <li class="nav-item">
+                        <a href="@Url.Action("Index", "ProductCategory")" class="nav-link text-white">
+                            <i class="fas fa-cogs"></i>
+                            <span class="menu-item">Category</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="@Url.Action("Index", "Products")" class="nav-link text-white">
+                            <i class="fas fa-cogs"></i>
+                            <span class="menu-item">Product</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <form asp-controller="auth" asp-action="logout" method="post" id="logoutForm" class="d-inline">
+                            <button type="submit" class="btn btn-link nav-link text-white p-0">
+                                <i class="fas fa-sign-out-alt"></i>
+                                <span class="menu-item">Logout</span>
+                            </button>
+                        </form>
+                    </li>
                 </ul>
             </nav>
+
 
             <!-- Content -->
             <div id="content" class="flex-grow-1">

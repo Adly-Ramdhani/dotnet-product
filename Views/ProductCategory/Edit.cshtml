@@ -1,17 +1,18 @@
 @model ProductManagementApp.Models.ProductCategory
 
 @{
-    ViewData["Title"] = "Product Category";
+    ViewData["Title"] = "Edit Product Category";
 }
 
 <div class="container mt-5">
     <div class="card shadow-sm border-0">
-        <div class="card-header bg-primary text-white">
-            <h4 class="mb-0">Create Product Category</h4>
+        <div class="card-header bg-warning text-dark">
+            <h4 class="mb-0">Edit Product Category</h4>
         </div>
 
-        <form asp-action="Create" method="post">
+        <form asp-action="Edit" method="post">
             @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="Id" />
             <div class="card-body">
 
                 <div class="mb-3 row">
@@ -33,8 +34,8 @@
             </div>
 
             <div class="card-footer text-end">
-                <button type="submit" class="btn btn-primary">Save</button>
-                @* <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a> *@
+                <button type="submit" class="btn btn-warning">Save Changes</button>
+                <a asp-action="Index" class="btn btn-outline-secondary ms-2">Cancel</a>
             </div>
         </form>
     </div>

@@ -1,0 +1,50 @@
+@using System.Globalization
+
+@{
+    ViewData["Title"] = "Products";
+}
+@model IEnumerable<ProductManagementApp.Models.Product>
+
+<h2>Products</h2>
+
+<p><a href="@Url.Action("Create")" class="btn btn-primary">Create New</a></p>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Category</th>
+            <th>Price</th>
+            <th>Description</th>
+            <th>Image</th>
+            <th>Created At</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var product in Model)
+        {
+            <tr>
+                <td>@product.Name</td>
+                <td>@product.Category?.Name</td> 
+                <td>@product.Price.ToString("C", new CultureInfo("id-ID"))</td>
+                <td>@product.Description</td>
+                <td>
+                    @if (!string.IsNullOrEmpty(product.ImageUrl))
+                    {
+                        <img src="@product.ImageUrl" alt="@product.Name" style="max-width: 100px; max-height: 80px;" />
+                    }
+                </td>
+                <td>@product.CreatedAt.ToLocalTime().ToString("dd MMMM yyyy")</td>
+                <td>
+                    <a href="@Url.Action("Edit", new { id = product.Id })" class="btn btn-sm btn-warning">Edit</a>
+
+                    <form asp-action="Delete" asp-route-id="@product.Id" method="post" style="display:inline;" 
+                          onsubmit="return confirm('Are you sure want to delete this product?');">
+                        <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

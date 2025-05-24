@@ -1,15 +1,15 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 using ProductManagementApp.Data;
 using ProductManagementApp.Models;
-using Microsoft.AspNetCore.Authorization; 
 using System.Security.Claims;
 using System;
 using System.Linq;
 
 namespace ProductManagementApp.Controllers
 {
-    [Authorize]
+     [Authorize]
     public class ProductCategoryController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -36,23 +36,22 @@ namespace ProductManagementApp.Controllers
             return View();
         }
 
+        // POST: /ProductCategory/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Create(ProductCategory category)
         {
-            if (!ModelState.IsValid)
-            {
-                return View(category);
-            }
-
-            // Ambil user id dari claim (pastikan user sudah login)
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+            var userIdClaim = User.FindFirst("id");
             if (userIdClaim == null)
             {
-                return Unauthorized();
+                return Content("User claim not found. User is not logged in or claim missing.");
             }
-
-            int userId = int.Parse(userIdClaim.Value);
+            var userIdStr = userIdClaim.Value;
+            if (!int.TryParse(userIdStr, out int userId))
+            {
+                return Content($"UserId claim invalid: {userIdStr}");
+            }
+            
             category.UserId = userId;
             category.CreatedAt = DateTime.UtcNow;
             category.UpdatedAt = DateTime.UtcNow;
@@ -79,27 +78,48 @@ namespace ProductManagementApp.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Edit(int id, ProductCategory category)
         {
-            if (id != category.Id) return NotFound();
+            if (id != category.Id)
+                return NotFound();
 
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
+                return View(category);
+
+            var userIdClaim = User.FindFirst("id");
+            if (userIdClaim == null)
             {
-                try
-                {
-                    category.UpdatedAt = DateTime.UtcNow;
-                    _context.Update(category);
-                    _context.SaveChanges();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!_context.ProductCategories.Any(e => e.Id == category.Id))
-                        return NotFound();
-                    else
-                        throw;
-                }
-                return RedirectToAction(nameof(Index));
+                return Content("User claim not found. User is not logged in or claim missing.");
             }
-            return View(category);
+            var userIdStr = userIdClaim.Value;
+            if (!int.TryParse(userIdStr, out int userId))
+            {
+                return Content($"UserId claim invalid: {userIdStr}");
+            }
+
+            // Pastikan userId tetap benar
+            category.UserId = userId;
+            category.UpdatedAt = DateTime.UtcNow;
+
+            try
+            {
+                _context.Update(category);
+                _context.SaveChanges();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!_context.ProductCategories.Any(e => e.Id == category.Id))
+                    return NotFound();
+                else
+                    throw;
+            }
+            catch (DbUpdateException)
+            {
+                ModelState.AddModelError(string.Empty, "Unable to save changes. Try again.");
+                return View(category);
+            }
+
+            return RedirectToAction(nameof(Index));
         }
+
 
         // GET: /ProductCategory/Delete/5
         public IActionResult Delete(int? id)

@@ -1,0 +1,106 @@
+@model ProductManagementApp.Models.Product
+
+@{
+    ViewData["Title"] = "Create Product";
+}
+
+<div class="container mt-5">
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Create Product</h4>
+        </div>
+
+        <form asp-action="Create" method="post" enctype="multipart/form-data">
+            @Html.AntiForgeryToken()
+            <div class="card-body">
+
+                <div class="mb-3 row">
+                    <label asp-for="Name" class="col-sm-3 col-form-label"></label>
+                    <div class="col-sm-9">
+                        <input asp-for="Name" class="form-control" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="mb-3 row">
+                    <label asp-for="CategoryId" class="col-sm-3 col-form-label">Category</label>
+                    <div class="col-sm-9">
+                        <select asp-for="CategoryId" class="form-select" asp-items="ViewBag.CategoryList">
+                            <option value="">-- Select Category --</option>
+                        </select>
+                        <span asp-validation-for="CategoryId" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="mb-3 row">
+                    <label asp-for="Price" class="col-sm-3 col-form-label"></label>
+                    <div class="col-sm-9">
+                        <!-- Input text untuk tampilan dengan format ribuan -->
+                        <input type="text" id="PriceDisplay" class="form-control" autocomplete="off" />
+                        <!-- Hidden input untuk data harga asli yang dikirim ke server -->
+                        <input asp-for="Price" id="Price" type="hidden" />
+                        <span asp-validation-for="Price" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="mb-3 row">
+                    <label asp-for="Description" class="col-sm-3 col-form-label"></label>
+                    <div class="col-sm-9">
+                        <textarea asp-for="Description" class="form-control"></textarea>
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="mb-3 row">
+                    <label asp-for="ImageUrl" class="col-sm-3 col-form-label">Product Image</label>
+                    <div class="col-sm-9">
+                        <input type="file" name="ImageFile" class="form-control" />
+                        <span asp-validation-for="ImageUrl" class="text-danger"></span>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="card-footer text-end">
+                <button type="submit" class="btn btn-primary">Save</button>
+                @* <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a> *@
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script>
+        const priceDisplay = document.getElementById('PriceDisplay');
+        const priceHidden = document.getElementById('Price');
+
+        function formatRibuan(angka) {
+            return angka.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        }
+
+        function cleanFormat(angka) {
+            return angka.replace(/\./g, '');
+        }
+
+        priceDisplay.addEventListener('input', function () {
+            let raw = cleanFormat(priceDisplay.value);
+            if (!isNaN(raw) && raw !== "") {
+                raw = parseInt(raw);
+                priceDisplay.value = formatRibuan(raw);
+                priceHidden.value = raw;
+            } else {
+                priceHidden.value = "";
+            }
+        });
+
+        // Saat halaman dimuat, isi tampilan dengan format ribuan jika ada nilai harga awal
+        document.addEventListener('DOMContentLoaded', function () {
+            let initial = priceHidden.value;
+            if (initial) {
+                priceDisplay.value = formatRibuan(parseInt(initial));
+            }
+        });
+    </script>
+}

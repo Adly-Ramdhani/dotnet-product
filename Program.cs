@@ -44,9 +44,10 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+
 app.UseRouting();
 
-// Middleware untuk membaca JWT dari cookie
+// Middleware untuk membaca JWT dari cookie dan menambahkan header Authorization
 app.Use(async (context, next) =>
 {
     var token = context.Request.Cookies["jwt"];
@@ -57,17 +58,35 @@ app.Use(async (context, next) =>
     await next();
 });
 
+// Middleware redirect ke login jika belum punya token JWT dan bukan sedang akses login/logout
+app.Use(async (context, next) =>
+{
+    var path = context.Request.Path.Value?.ToLower();
+
+    var token = context.Request.Cookies["jwt"];
+
+    var allowedPaths = new[] { "/auth/login", "/auth/loginform", "/auth/logout" };
+
+    if (string.IsNullOrEmpty(token) && !allowedPaths.Contains(path))
+    {
+        context.Response.Redirect("/auth/login");
+        return;
+    }
+
+    await next();
+});
+
 app.UseAuthentication();
 app.UseAuthorization();
 
-// app.MapGet("/", context =>
-// {
-//     context.Response.Redirect("/auth/login");
-//     return Task.CompletedTask;
-// });
+app.MapGet("/", context =>
+{
+    context.Response.Redirect("/auth/login");
+    return Task.CompletedTask;
+});
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=Auth}/{action=Login}/{id?}");
 
 app.Run();

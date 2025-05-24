@@ -1,0 +1,87 @@
+@model ProductManagementApp.Models.Product
+
+@{
+    ViewData["Title"] = "Edit Product";
+}
+
+<div class="container mt-5">
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-warning text-dark">
+            <h4 class="mb-0">Edit Product</h4>
+        </div>
+
+        <form asp-action="Edit" method="post" enctype="multipart/form-data">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="Id" />
+            <div class="card-body">
+
+                <div class="mb-3 row">
+                    <label asp-for="Name" class="col-sm-3 col-form-label"></label>
+                    <div class="col-sm-9">
+                        <input asp-for="Name" class="form-control" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="mb-3 row">
+                    <label asp-for="CategoryId" class="col-sm-3 col-form-label">Category</label>
+                    <div class="col-sm-9">
+                        <select asp-for="CategoryId" class="form-select" asp-items="ViewBag.CategoryList">
+                            <option value="">-- Select Category --</option>
+                        </select>
+                        <span asp-validation-for="CategoryId" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="mb-3 row">
+                    <label asp-for="Price" class="col-sm-3 col-form-label"></label>
+                    <div class="col-sm-9">
+                        <input asp-for="Price" class="form-control" type="number" step="0.01" />
+                        <span asp-validation-for="Price" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="mb-3 row">
+                    <label asp-for="Description" class="col-sm-3 col-form-label"></label>
+                    <div class="col-sm-9">
+                        <textarea asp-for="Description" class="form-control"></textarea>
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+                </div>
+
+                @* Tampilkan URL gambar sekarang *@
+                <div class="mb-3 row">
+                    <label class="col-sm-3 col-form-label">Current Image</label>
+                    <div class="col-sm-9">
+                        @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                        {
+                            <img src="@Model.ImageUrl" alt="Product Image" style="max-height: 150px;" class="mb-2" />
+                        }
+                        else
+                        {
+                            <p class="text-muted">No image uploaded.</p>
+                        }
+                    </div>
+                </div>
+
+                @* Opsi ganti gambar *@
+                <div class="mb-3 row">
+                    <label class="col-sm-3 col-form-label">Change Image</label>
+                    <div class="col-sm-9">
+                        <input type="file" name="ImageFile" class="form-control" />
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="card-footer text-end">
+                <button type="submit" class="btn btn-warning">Save Changes</button>
+                <a asp-action="Index" class="btn btn-outline-secondary ms-2">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
