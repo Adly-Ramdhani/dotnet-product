@@ -1,205 +1,264 @@
-﻿@* @using Microsoft.AspNetCore.Http
-@{ 
-    var username = Context.Session.GetString("Username"); // Ambil username dari session    
-} *@
+﻿@* Layout.cshtml *@
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] Product Management </title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" />
-    <link rel="stylesheet" href="~/lib/fontawesome/css/all.min.css" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@ViewData["Title"] - Product Management</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
 
     <style>
-
-        body {
-            overflow-x: hidden;
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
         }
 
         #sidebar {
-            min-height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 250px;
-            background-color: #4F709C;
-            color: #fff;
-            transition: all 0.3s;
+            height: 100vh;
+            background-color: #212529;
+            color: #e9ecef;
+            transition: width 0.3s ease;
+            overflow-y: auto;
+            z-index: 1000;
         }
 
-            #sidebar.collapsed {
-                width: 60px;
-            }
-
-            #sidebar .menu-header {
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-                padding: 10px 15px;
-                border-bottom: 1px solid #F5EFE7;
-                /* background-color: #F5EFE7; */
-            }
-
-            #sidebar.collapsed .menu-item {
-                display: none;
-            }
-
-        #content {
-            transition: all 0.3s;
+        #sidebar.collapsed {
+            width: 70px;
         }
 
-            #content.collapsed {
-            }
-
-        #right-side {
+        #sidebar .menu-header {
+            padding: 1rem 1.25rem;
+            font-weight: 700;
+            font-size: 1.3rem;
+            border-bottom: 1px solid #343a40;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 10px;
-            background-color: #D8C4B6;
-            color: #fff;
-            /* border-bottom: 1px solid #ddd; */
+            color: #ffc107;
         }
 
-        #user-info {
+        #toggleSidebar {
+            background: transparent;
+            border: none;
+            color: #ffc107;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        #sidebar.collapsed #toggleSidebar {
+            transform: rotate(180deg);
+        }
+
+        #sidebar ul.nav {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        #sidebar ul.nav li.nav-item a.nav-link {
+            color: #e9ecef;
+            padding: 0.75rem 1.5rem;
             display: flex;
             align-items: center;
+            font-weight: 500;
+            border-radius: 0 20px 20px 0;
+            transition: all 0.3s;
+            white-space: nowrap;
         }
 
-            #user-info img {
-                width: 30px;
-                height: 30px;
-                border-radius: 50%;
-                margin-right: 10px;
-            }
-
-        #sidebar .nav-link.btn {
-            text-align: left; 
-            width: 100%;      
+        #sidebar ul.nav li.nav-item a.nav-link:hover,
+        #sidebar ul.nav li.nav-item a.nav-link.active {
+            background-color: #ffc107;
+            color: #212529;
+            padding-left: 2rem;
+            text-decoration: none;
         }
-        #sidebar.collapsed .menu-header h5 {
+
+        #sidebar ul.nav li.nav-item a.nav-link i.fas {
+            min-width: 24px;
+            font-size: 1.25rem;
+            margin-right: 12px;
+            transition: margin 0.3s ease;
+        }
+
+        #sidebar.collapsed ul.nav li.nav-item a.nav-link .menu-item {
             display: none;
         }
-        .footer {
-            background-color: #F5EFE7;
-            color: black;
+
+        #sidebar.collapsed ul.nav li.nav-item a.nav-link i.fas {
+            margin-right: 0;
+            width: 100%;
             text-align: center;
-            padding: 10px 0;
         }
 
+        #sidebar .logout-form {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid #343a40;
+        }
 
+        #sidebar .logout-form button {
+            color: #e9ecef;
+            width: 100%;
+            text-align: left;
+            padding: 0.5rem 0;
+            font-weight: 600;
+            background: transparent;
+            border: none;
+            display: flex;
+            align-items: center;
+            border-radius: 0 20px 20px 0;
+        }
+
+        #sidebar .logout-form button:hover {
+            background-color: #ffc107;
+            color: #212529;
+            padding-left: 2rem;
+        }
+
+        #sidebar.collapsed .logout-form button .menu-item {
+            display: none;
+        }
+
+        #sidebar.collapsed .logout-form button i.fas {
+            margin-right: 0;
+            width: 100%;
+            text-align: center;
+        }
+
+        #content {
+            margin-left: 0;
+            padding-left: 250px;
+            transition: padding-left 0.3s ease;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background-color: #fff;
+        }
+
+        #content.collapsed {
+            padding-left: 70px;
+        }
+
+        header {
+            background-color: #fff;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #dee2e6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        main {
+            padding: 2rem;
+            flex-grow: 1;
+            background-color: #f8f9fa;
+        }
+
+        footer {
+            background-color: #fff;
+            padding: 1rem;
+            border-top: 1px solid #dee2e6;
+            font-size: 0.85rem;
+            color: #6c757d;
+            text-align: center;
+        }
     </style>
-
 </head>
 <body>
-    <header>
-        <div class="d-flex">
-            <!-- Sidebar -->
-            <nav id="sidebar">
-                <div class="menu-header">
-                    <button id="toggleSidebar" class="btn btn-primary btn-sm">
-                        <i class="fas fa-bars"></i>
-                    </button>
-                    <h5 id="menuTitle" class="mb-0 text-white">My Menu</h5>
-                </div>
-                <ul class="nav flex-column p-2">
-                    <li class="nav-item">
-                        <a href="@Url.Action("Index", "Home")" class="nav-link text-white">
-                            <i class="fas fa-home"></i>
-                            <span class="menu-item">Home</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        @{
-                            var userId = User.FindFirst("id")?.Value;
-                        }
-                        <a href="@Url.Action("Details", "User", new { id = userId })" class="nav-link text-white">
-                            <i class="fas fa-user"></i>
-                            <span class="menu-item">Profile</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="@Url.Action("Index", "ProductCategory")" class="nav-link text-white">
-                            <i class="fas fa-cogs"></i>
-                            <span class="menu-item">Category</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="@Url.Action("Index", "Products")" class="nav-link text-white">
-                            <i class="fas fa-cogs"></i>
-                            <span class="menu-item">Product</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <form asp-controller="auth" asp-action="logout" method="post" id="logoutForm" class="d-inline">
-                            <button type="submit" class="btn btn-link nav-link text-white p-0">
-                                <i class="fas fa-sign-out-alt"></i>
-                                <span class="menu-item">Logout</span>
-                            </button>
-                        </form>
-                    </li>
-                </ul>
-            </nav>
-
-
-            <!-- Content -->
-            <div id="content" class="flex-grow-1">
-                <!-- Right-Side -->
-                <div id="right-side">
-                    <div>
-                        <h6 class="mb-0">Product Management</h6>
-                    </div>
-                    <div id="user-info">
-                    @if (User.Identity != null && User.Identity.IsAuthenticated)
-                    {
-                        <span class="mr-3">Hello, @User.Identity.Name!</span>
-
-                    }
-                    else
-                    {
-                        <a class="btn btn-primary btn-sm" asp-area="" asp-controller="Account" asp-action="Login">Login</a>
-                    }
-                    </div>
-                </div>
-
-                <!-- Main Content -->
-                <div class="p-4">
-                    @RenderBody()
-                </div>
-
-                <!-- Footer -->
-              
-
-            </div>
-
-
-
+    <nav id="sidebar">
+        <div class="menu-header">
+            <button id="toggleSidebar"><i class="fas fa-bars"></i></button>
         </div>
-    </header>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
-    <script src="~/lib/fontawesome/js/all.min.js"></script>
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a href="@Url.Action("Index", "Home")" class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "Home" ? "active" : "")">
+                    <i class="fas fa-home"></i>
+                    <span class="menu-item">Home</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                @{
+                    var userId = User.FindFirst("id")?.Value ?? "";
+                }
+                <a href="@Url.Action("Details", "User", new { id = userId })" class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "User" ? "active" : "")">
+                    <i class="fas fa-user"></i>
+                    <span class="menu-item">Profile</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="@Url.Action("Index", "ProductCategory")" class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "ProductCategory" ? "active" : "")">
+                    <i class="fas fa-cogs"></i>
+                    <span class="menu-item">Category</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="@Url.Action("Index", "Products")" class="nav-link @(ViewContext.RouteData.Values["controller"].ToString() == "Products" ? "active" : "")">
+                    <i class="fas fa-box-open"></i>
+                    <span class="menu-item">Product</span>
+                </a>
+            </li>
+        </ul>
+        <div class="logout-form mt-auto">
+            <form asp-controller="Auth" asp-action="Logout" method="post">
+                <button type="submit">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span class="menu-item">Logout</span>
+                </button>
+            </form>
+        </div>
+    </nav>
+
+    <div id="content">
+        <header>
+            <h6>Product Management</h6>
+            <div>
+                @if (User.Identity?.IsAuthenticated ?? false)
+                {
+                    <span class="me-3">Hello, <strong>@User.Identity.Name</strong>!</span>
+                    <form asp-controller="Auth" asp-action="Logout" method="post" class="d-inline">
+                        <button type="submit" class="btn btn-outline-danger btn-sm">Logout</button>
+                    </form>
+                }
+                else
+                {
+                    <a class="btn btn-primary btn-sm" asp-controller="Account" asp-action="Login">Login</a>
+                }
+            </div>
+        </header>
+
+        <main>
+            @RenderBody()
+        </main>
+
+        <footer>
+            &copy; @DateTime.Now.Year Adly. All rights reserved.
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <script>
+        const toggleBtn = document.getElementById('toggleSidebar');
+        const sidebar = document.getElementById('sidebar');
+        const content = document.getElementById('content');
+
+        toggleBtn.addEventListener('click', () => {
+            sidebar.classList.toggle('collapsed');
+            content.classList.toggle('collapsed');
+        });
+    </script>
+
     @await RenderSectionAsync("Scripts", required: false)
-
-        <script>
-            $(document).ready(function () {
-                // Show side menu
-                document.getElementById('toggleSidebar').addEventListener('click', function () {
-                    var sidebar = document.getElementById('sidebar');
-                    var content = document.getElementById('content');
-                    var menuTitle = document.getElementById('menuTitle');
-                    sidebar.classList.toggle('collapsed');
-                    content.classList.toggle('collapsed');
-
-                    // Hide/Show the menu title
-                    if (sidebar.classList.contains('collapsed')) {
-                        menuTitle.style.display = 'none';
-                    } else {
-                        menuTitle.style.display = 'block';
-                    }
-                });
-            });
-        </script>
 </body>
 </html>
