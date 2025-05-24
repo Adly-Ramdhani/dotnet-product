@@ -32,15 +32,14 @@
                         <span asp-validation-for="CategoryId" class="text-danger"></span>
                     </div>
                 </div>
-
                 <div class="mb-3 row">
                     <label asp-for="Price" class="col-sm-3 col-form-label"></label>
                     <div class="col-sm-9">
-                        <input asp-for="Price" class="form-control" type="number" step="0.01" />
+                        <input id="PriceDisplay" class="form-control" type="text" />
+                        <input asp-for="Price" id="Price" type="hidden" />
                         <span asp-validation-for="Price" class="text-danger"></span>
                     </div>
                 </div>
-
                 <div class="mb-3 row">
                     <label asp-for="Description" class="col-sm-3 col-form-label"></label>
                     <div class="col-sm-9">
@@ -84,4 +83,36 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script>
+        const priceDisplay = document.getElementById('PriceDisplay');
+        const priceHidden = document.getElementById('Price');
+
+        function formatRibuan(angka) {
+            return angka.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        }
+
+        function cleanFormat(angka) {
+            return angka.replace(/\./g, '');
+        }
+
+        priceDisplay.addEventListener('input', function () {
+            let raw = cleanFormat(priceDisplay.value);
+            if (!isNaN(raw) && raw !== "") {
+                raw = parseInt(raw);
+                priceDisplay.value = formatRibuan(raw);
+                priceHidden.value = raw;
+            } else {
+                priceHidden.value = "";
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', function () {
+            let initial = priceHidden.value;
+            if (initial) {
+                priceDisplay.value = formatRibuan(parseInt(initial));
+            }
+        });
+    </script>
 }
+
