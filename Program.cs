@@ -65,7 +65,7 @@ app.Use(async (context, next) =>
 
     var token = context.Request.Cookies["jwt"];
 
-    var allowedPaths = new[] { "/auth/login", "/auth/loginform", "/auth/logout" };
+    var allowedPaths = new[] { "/auth/login", "/auth/loginform", "/auth/logout", "/auth/register" };
 
     if (string.IsNullOrEmpty(token) && !allowedPaths.Contains(path))
     {

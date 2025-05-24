@@ -17,8 +17,12 @@ ProductManagementApp adalah aplikasi web berbasis ASP.NET Core MVC yang digunaka
 ## 📦 Instalasi & Menjalankan Proyek
 
 ### 1. Clone Proyek
-
 git clone https://github.com/Adly-Ramdhani/dotnet-product.git
+
+### 2.
+"ConnectionStrings": {
+    "DefaultConnection": "Host=localhost;Port=5432;Database=db_product2;Username=postgres;Password=nabati321"
+  },
 
 
 
