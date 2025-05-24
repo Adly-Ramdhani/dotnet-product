@@ -28,7 +28,7 @@ git clone https://github.com/Adly-Ramdhani/dotnet-product.git
 ### 3. dotnet ef database update
 ### 4. dotnet clean
 ### 5. rm -rf obj/ bin/  
-### 5. donret build
+### 5. dotnet build
 ### 6. dotnet run
 
 
