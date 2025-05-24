@@ -84,35 +84,44 @@
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 
-    <script>
-        const priceDisplay = document.getElementById('PriceDisplay');
-        const priceHidden = document.getElementById('Price');
+     <script>
+    const priceDisplay = document.getElementById('PriceDisplay');
+    const priceHidden = document.getElementById('Price');
 
-        function formatRibuan(angka) {
-            return angka.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    function formatRibuan(angka) {
+        return angka.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
+
+    function cleanFormat(angka) {
+        return angka.replace(/\./g, '');
+    }
+
+    priceDisplay.addEventListener('input', function () {
+        let raw = cleanFormat(priceDisplay.value);
+
+        // Cegah huruf masuk
+        if (!/^\d*$/.test(raw)) {
+            raw = raw.replace(/\D/g, ''); // Hapus semua non-digit
         }
 
-        function cleanFormat(angka) {
-            return angka.replace(/\./g, '');
+        if (raw !== "") {
+            raw = parseInt(raw);
+            priceDisplay.value = formatRibuan(raw);
+            priceHidden.value = raw;
+        } else {
+            priceDisplay.value = "";
+            priceHidden.value = "";
         }
+    });
 
-        priceDisplay.addEventListener('input', function () {
-            let raw = cleanFormat(priceDisplay.value);
-            if (!isNaN(raw) && raw !== "") {
-                raw = parseInt(raw);
-                priceDisplay.value = formatRibuan(raw);
-                priceHidden.value = raw;
-            } else {
-                priceHidden.value = "";
-            }
-        });
-
-        document.addEventListener('DOMContentLoaded', function () {
-            let initial = priceHidden.value;
-            if (initial) {
-                priceDisplay.value = formatRibuan(parseInt(initial));
-            }
-        });
+    // Saat halaman dimuat, isi tampilan dengan format ribuan jika ada nilai harga awal
+    document.addEventListener('DOMContentLoaded', function () {
+        let initial = priceHidden.value;
+        if (initial) {
+            priceDisplay.value = formatRibuan(parseInt(initial));
+        }
+    });
     </script>
 }
+
 
