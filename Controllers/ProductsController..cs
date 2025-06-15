@@ -67,6 +67,7 @@ namespace ProductManagementApp.Controllers
             {
                 return Content("User claim not found. User is not logged in or claim missing.");
             }
+
             if (!int.TryParse(userIdClaim.Value, out int userId))
             {
                 return Content("User ID claim is invalid.");
@@ -91,21 +92,19 @@ namespace ProductManagementApp.Controllers
                     }
 
                     model.ImageUrl = "/uploads/" + uniqueFileName;
-
-                    // Debug cek file ada gak di folder
-                    bool fileExists = System.IO.File.Exists(filePath);
-                    Console.WriteLine($"File saved: {fileExists} at {filePath}");
                 }
-
 
                 model.UserId = userId;
 
                 _context.Products.Add(model);
                 await _context.SaveChangesAsync();
 
+                // ✅ TempData diletakkan di sini agar bisa muncul setelah redirect
+                TempData["SuccessMessage"] = "Produk berhasil ditambahkan.";
                 return RedirectToAction(nameof(Index));
             }
 
+            // Jika ModelState tidak valid, tampilkan kembali form dengan kategori
             var categories = _context.ProductCategories
                                     .Where(c => c.DeletedAt == null)
                                     .ToList();
@@ -113,6 +112,7 @@ namespace ProductManagementApp.Controllers
 
             return View(model);
         }
+
 
 
 
@@ -126,19 +126,19 @@ namespace ProductManagementApp.Controllers
             if (product == null)
                 return NotFound();
 
-            // Ambil semua kategori yang belum dihapus
+        
             var categories = await _context.ProductCategories
                                         .Where(c => c.DeletedAt == null)
                                         .ToListAsync();
 
-            // Kirim SelectList ke ViewBag (agar bisa dipilih)
+            
             ViewBag.CategoryList = new SelectList(categories, "Id", "Name", product.CategoryId);
 
             return View(product);
         }
 
         // POST: Products/Edit/5
-        [HttpPost]
+       [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, Product model, IFormFile? ImageFile)
         {
@@ -172,7 +172,7 @@ namespace ProductManagementApp.Controllers
                     existingProduct.Description = model.Description;
                     existingProduct.Price = model.Price;
                     existingProduct.CategoryId = model.CategoryId;
-                    existingProduct.UserId = userId; // update userId kalau dibutuhkan
+                    existingProduct.UserId = userId;
 
                     if (ImageFile != null && ImageFile.Length > 0)
                     {
@@ -195,6 +195,10 @@ namespace ProductManagementApp.Controllers
 
                     _context.Update(existingProduct);
                     await _context.SaveChangesAsync();
+
+                    
+                    TempData["SuccessMessage"] = "Produk berhasil diperbarui.";
+                    return RedirectToAction(nameof(Index));
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -203,10 +207,9 @@ namespace ProductManagementApp.Controllers
                     else
                         throw;
                 }
-
-                return RedirectToAction(nameof(Index));
             }
 
+            // Jika ModelState tidak valid, siapkan kembali kategori dan tampilkan form
             var categories = _context.ProductCategories
                                     .Where(c => c.DeletedAt == null)
                                     .ToList();
@@ -214,6 +217,7 @@ namespace ProductManagementApp.Controllers
 
             return View(model);
         }
+
 
 
 
@@ -245,6 +249,7 @@ namespace ProductManagementApp.Controllers
                 _context.Products.Update(product);
                 await _context.SaveChangesAsync();
             }
+            TempData["SuccessMessage"] = "Produk berhasil dihapus.";
             return RedirectToAction(nameof(Index));
         }
     }

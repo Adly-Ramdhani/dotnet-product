@@ -44,14 +44,16 @@ namespace ProductManagementApp.Controllers
             var userIdClaim = User.FindFirst("id");
             if (userIdClaim == null)
             {
-                return Content("User claim not found. User is not logged in or claim missing.");
+                TempData["ErrorMessage"] = "Gagal membuat kategori. User tidak valid.";
+                return RedirectToAction(nameof(Index));
             }
-            var userIdStr = userIdClaim.Value;
-            if (!int.TryParse(userIdStr, out int userId))
+
+            if (!int.TryParse(userIdClaim.Value, out int userId))
             {
-                return Content($"UserId claim invalid: {userIdStr}");
+                TempData["ErrorMessage"] = "ID pengguna tidak valid.";
+                return RedirectToAction(nameof(Index));
             }
-            
+
             category.UserId = userId;
             category.CreatedAt = DateTime.UtcNow;
             category.UpdatedAt = DateTime.UtcNow;
@@ -59,8 +61,10 @@ namespace ProductManagementApp.Controllers
             _context.ProductCategories.Add(category);
             _context.SaveChanges();
 
+            TempData["SuccessMessage"] = "Kategori berhasil dibuat.";
             return RedirectToAction(nameof(Index));
         }
+
 
         // GET: /ProductCategory/Edit/5
         public IActionResult Edit(int? id)
@@ -85,17 +89,12 @@ namespace ProductManagementApp.Controllers
                 return View(category);
 
             var userIdClaim = User.FindFirst("id");
-            if (userIdClaim == null)
+            if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
             {
-                return Content("User claim not found. User is not logged in or claim missing.");
-            }
-            var userIdStr = userIdClaim.Value;
-            if (!int.TryParse(userIdStr, out int userId))
-            {
-                return Content($"UserId claim invalid: {userIdStr}");
+                TempData["ErrorMessage"] = "Gagal menyimpan. User tidak valid.";
+                return View(category);
             }
 
-            // Pastikan userId tetap benar
             category.UserId = userId;
             category.UpdatedAt = DateTime.UtcNow;
 
@@ -103,22 +102,16 @@ namespace ProductManagementApp.Controllers
             {
                 _context.Update(category);
                 _context.SaveChanges();
+                TempData["SuccessMessage"] = "Kategori berhasil diperbarui.";
             }
-            catch (DbUpdateConcurrencyException)
+            catch
             {
-                if (!_context.ProductCategories.Any(e => e.Id == category.Id))
-                    return NotFound();
-                else
-                    throw;
-            }
-            catch (DbUpdateException)
-            {
-                ModelState.AddModelError(string.Empty, "Unable to save changes. Try again.");
-                return View(category);
+                TempData["ErrorMessage"] = "Gagal menyimpan perubahan.";
             }
 
             return RedirectToAction(nameof(Index));
         }
+
 
 
         // GET: /ProductCategory/Delete/5
@@ -140,11 +133,18 @@ namespace ProductManagementApp.Controllers
             var category = _context.ProductCategories.Find(id);
             if (category != null)
             {
-                category.DeletedAt = DateTime.UtcNow; // soft delete
+                category.DeletedAt = DateTime.UtcNow;
                 _context.Update(category);
                 _context.SaveChanges();
+                TempData["SuccessMessage"] = "Kategori berhasil dihapus.";
             }
+            else
+            {
+                TempData["ErrorMessage"] = "Kategori tidak ditemukan.";
+            }
+
             return RedirectToAction(nameof(Index));
         }
+
     }
 }

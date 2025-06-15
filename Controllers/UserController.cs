@@ -70,7 +70,7 @@ public class UserController : Controller
         return View(user);
     }
 
-    // POST: User/Edit/id
+ // POST: User/Edit/id
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Edit(int id, User user)
@@ -84,17 +84,24 @@ public class UserController : Controller
             if (existingUser == null || existingUser.DeletedAt != null)
                 return NotFound();
 
+            // ✅ Cek apakah email sudah digunakan oleh user lain
+            var emailExists = await _context.Users
+                .AnyAsync(u => u.Email == user.Email && u.Id != id && u.DeletedAt == null);
+
+            if (emailExists)
+            {
+                ModelState.AddModelError("Email", "Email sudah digunakan oleh pengguna lain.");
+                return View(user);
+            }
+
             existingUser.FullName = user.FullName;
             existingUser.Email = user.Email;
 
-            // Cek apakah password diisi (bisa disesuaikan sesuai kebutuhan)
             if (!string.IsNullOrEmpty(user.Password))
             {
-                // Hash password sebelum disimpan
                 existingUser.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
             }
 
-            // Simpan gambar jika ada yang di-upload
             if (user.ProfilePictureFile != null)
             {
                 var fileName = Path.GetFileName(user.ProfilePictureFile.FileName);
@@ -112,12 +119,14 @@ public class UserController : Controller
             _context.Update(existingUser);
             await _context.SaveChangesAsync();
 
-            // Redirect ke Details action dengan id user yang baru saja diedit
+            TempData["SuccessMessage"] = "Profil berhasil diperbarui!";
             return RedirectToAction("Details", new { id = existingUser.Id });
         }
 
         return View(user);
     }
+
+
 
 
 

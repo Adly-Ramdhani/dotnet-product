@@ -33,9 +33,17 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddControllersWithViews();
 
+// Tambahkan session dan memory cache
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
+
 var app = builder.Build();
 
-// Middleware pipeline
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
@@ -47,13 +55,15 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseSession(); // Penting: aktifkan session sebelum Authentication dan Authorization
+
 // Middleware untuk membaca JWT dari cookie dan menambahkan header Authorization
 app.Use(async (context, next) =>
 {
     var token = context.Request.Cookies["jwt"];
     if (!string.IsNullOrEmpty(token))
     {
-        context.Request.Headers.Append("Authorization", $"Bearer {token}");
+        context.Request.Headers["Authorization"] = $"Bearer {token}";
     }
     await next();
 });
@@ -61,13 +71,16 @@ app.Use(async (context, next) =>
 // Middleware redirect ke login jika belum punya token JWT dan bukan sedang akses login/logout
 app.Use(async (context, next) =>
 {
-    var path = context.Request.Path.Value?.ToLower();
-
+    var path = context.Request.Path.Value?.ToLowerInvariant() ?? "";
     var token = context.Request.Cookies["jwt"];
 
-    var allowedPaths = new[] { "/auth/login", "/auth/loginform", "/auth/logout", "/auth/register" };
+    var isPublicPath = path.StartsWith("/auth/login")
+                    || path.StartsWith("/auth/register")
+                    || path.StartsWith("/auth/verify-otp")
+                    || path.StartsWith("/auth/resend-otp")
+                    || path.StartsWith("/auth/logout");
 
-    if (string.IsNullOrEmpty(token) && !allowedPaths.Contains(path))
+    if (string.IsNullOrEmpty(token) && !isPublicPath)
     {
         context.Response.Redirect("/auth/login");
         return;
@@ -75,6 +88,7 @@ app.Use(async (context, next) =>
 
     await next();
 });
+
 
 app.UseAuthentication();
 app.UseAuthorization();

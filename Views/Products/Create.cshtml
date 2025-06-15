@@ -1,9 +1,7 @@
 @model ProductManagementApp.Models.Product
-
 @{
     ViewData["Title"] = "Create Product";
 }
-
 <div class="container mt-5">
     <div class="card shadow-sm border-0">
         <div class="card-header bg-primary text-white">
@@ -13,7 +11,6 @@
         <form asp-action="Create" method="post" enctype="multipart/form-data">
             @Html.AntiForgeryToken()
             <div class="card-body">
-
                 <div class="mb-3 row">
                     <label asp-for="Name" class="col-sm-3 col-form-label"></label>
                     <div class="col-sm-9">
@@ -56,12 +53,11 @@
                         <span asp-validation-for="ImageUrl" class="text-danger"></span>
                     </div>
                 </div>
-
             </div>
 
             <div class="card-footer text-end">
                 <button type="submit" class="btn btn-primary">Save</button>
-                @* <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a> *@
+                <a asp-action="Index" class="btn btn-outline-secondary ms-2">Cancel</a>
             </div>
         </form>
     </div>
@@ -69,43 +65,36 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        const priceDisplay = document.getElementById('PriceDisplay');
+        const priceHidden = document.getElementById('Price');
 
-   <script>
-    const priceDisplay = document.getElementById('PriceDisplay');
-    const priceHidden = document.getElementById('Price');
-
-    function formatRibuan(angka) {
-        return angka.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-    }
-
-    function cleanFormat(angka) {
-        return angka.replace(/\./g, '');
-    }
-
-    priceDisplay.addEventListener('input', function () {
-        let raw = cleanFormat(priceDisplay.value);
-
-        // Cegah huruf masuk
-        if (!/^\d*$/.test(raw)) {
-            raw = raw.replace(/\D/g, ''); // Hapus semua non-digit
+        function formatRibuan(angka) {
+            return angka.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
         }
 
-        if (raw !== "") {
-            raw = parseInt(raw);
-            priceDisplay.value = formatRibuan(raw);
-            priceHidden.value = raw;
-        } else {
-            priceDisplay.value = "";
-            priceHidden.value = "";
+        function cleanFormat(angka) {
+            return angka.replace(/\./g, '');
         }
-    });
 
-    // Saat halaman dimuat, isi tampilan dengan format ribuan jika ada nilai harga awal
-    document.addEventListener('DOMContentLoaded', function () {
-        let initial = priceHidden.value;
-        if (initial) {
-            priceDisplay.value = formatRibuan(parseInt(initial));
-        }
-    });
+        priceDisplay.addEventListener('input', function () {
+            let raw = cleanFormat(priceDisplay.value);
+            if (!/^\d*$/.test(raw)) raw = raw.replace(/\D/g, '');
+            if (raw !== "") {
+                raw = parseInt(raw);
+                priceDisplay.value = formatRibuan(raw);
+                priceHidden.value = raw;
+            } else {
+                priceDisplay.value = "";
+                priceHidden.value = "";
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', function () {
+            let initial = priceHidden.value;
+            if (initial) {
+                priceDisplay.value = formatRibuan(parseInt(initial));
+            }
+        });
     </script>
 }
